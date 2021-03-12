@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
+# Create a function to read the data file
 def read_data(filename,delimiter=',',starting_row=0):
     """This function reads data from a specified filename. 
     The specified filename should point to a .csv file."""
