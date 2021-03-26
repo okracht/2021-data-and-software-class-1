@@ -17,30 +17,33 @@ def read_data(filename,delimiter=',',starting_row=0):
     temperature_data = np.array(all_data[starting_row:,:], dtype=float)
     return temperature_data
 
-temperature_data = read_data("data/110-tavg-12-12-1950-2020.csv", starting_row=5)
+def process_data(temperature_data):
+    # Compute a new column by multiplying column number 1 to Kelvin
+    temperature_kelvin = (temperature_data[:,1,None] - 32) * 5/9 + 273
 
-# Compute a new column by multiplying column number 1 to Kelvin
-temperature_kelvin = (temperature_data[:,1,None] - 32) * 5/9 + 273
+    # Append this new column to the existing temperature_data array
+    processed_temperature_data = np.append(temperature_data, temperature_kelvin,1)
+    return processed_temperature_data
 
-# Append this new column to the existing temperature_data array
-processed_temperature_data = np.append(temperature_data, temperature_kelvin,1)
+def plot_data(processed_temperature_data):
+    # Create a figure of the processed data
+    temperature_figure = plt.figure()
+    temperature_plot = plt.bar (processed_temperature_data[:,0],processed_temperature_data[:,2], width=35, color='blue')
 
-# Create a figure of the processed data
-temperature_figure = plt.figure()
-temperature_plot = plt.bar (processed_temperature_data[:,0],processed_temperature_data[:,2], width=35, color='blue')
-
-plt.show(block=True)
-temperature_figure.savefig('results/temperature-over-time.pdf')
-
-all_data = pd.read_csv("data/110-tavg-12-12-1950-2020.csv", index_col='Date', header=4)
-all_data.info()
-all_data.to_json("results/data_output.json")
+    plt.show(block=True)
+    temperature_figure.savefig('results/temperature-over-time.pdf')
 
 
+def convert_data(filename):
+    all_data = pd.read_csv("data/110-tavg-12-12-1950-2020.csv", index_col='Date', header=4)
+    all_data.info()
+    all_data.to_json("results/data_output.json")
 
-json_data = pd.read_json("results/data_output.json")
-json_data.info()
+def plot():
+    temperature_data = read_data("data/110-tavg-12-12-1950-2020.csv", starting_row=5)
+    processed_temperature_data = process_data(temperature_data)
+    plot_data(processed_temperature_data)
+    convert_data("data/110-tavg-12-12-1950-2020.csv")
 
-temperature_plot = plt.bar (all_data.loc[:,"Value"], height=all_data.loc[:,"Value"], width=30)
-plt.show(block=True)
-
+if __name__ == "__main__":
+    plot()
